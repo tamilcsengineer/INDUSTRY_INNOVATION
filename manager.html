@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manager Dashboard</title>
+  <link rel="stylesheet" href="global.css">
+
+  <style>
+    /* ===== LAYOUT ===== */
+    .manager-layout {
+      display: grid;
+      grid-template-columns: 2.5fr 1.2fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .manager-right {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ===== FEATURE CARDS ===== */
+    .feature-card {
+      padding: 16px;
+    }
+
+    .feature-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .feature-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .feature-actions button {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: fit-content;
+    }
+
+    .feature-content {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ===== TAGS ===== */
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      margin-left: 6px;
+      font-weight: 600;
+    }
+
+    .tag-low { background:#fee2e2; color:#b91c1c; }
+    .tag-warning { background:#fff7ed; color:#c2410c; }
+    .tag-dead { background:#fef3c7; color:#92400e; }
+    .tag-action { background:#dcfce7; color:#166534; }
+
+    .result {
+      margin-top: 6px;
+      font-size: 13px;
+      color: green;
+    }
+  </style>
+</head>
+
+<body onload="protectPage(['manager']);">
+
+<div class="sidebar">
+  <h2>Manager</h2>
+  <a href="manager.html" class="active">Dashboard</a>
+  <a href="admindashboard.html">Admin</a>
+  <a href="staff.html">Staff</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="content" style="margin-left:240px; padding:20px;">
+  <h2>📦 Manager Dashboard</h2>
+
+  <div class="manager-layout">
+
+    <!-- LEFT -->
+    <div>
+      <div class="card">
+        <h3>Add Product</h3>
+        <select id="addProduct">
+          <option>BOOKS</option><option>TOYS</option><option>METALS</option>
+        </select>
+        <input type="number" id="addQty">
+        <button onclick="addProduct()">Add</button>
+        <div id="addMsg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Sell Product</h3>
+        <select id="sellProduct">
+          <option>BOOKS</option><option>TOYS</option><option>METALS</option>
+        </select>
+        <input type="number" id="sellQty">
+        <button onclick="sellProduct()">Sell</button>
+        <div id="sellMsg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Refill Stock</h3>
+        <select id="refillProduct">
+          <option>BOOKS</option><option>TOYS</option><option>METALS</option>
+        </select>
+        <input type="number" id="refillQty">
+        <button onclick="refillStock()">Refill</button>
+        <div id="refillMsg"></div>
+      </div>
+
+      <div class="card">
+        <h3>📊 Current Stock</h3>
+        <table>
+          <thead>
+            <tr><th>Product</th><th>Stock</th><th>Status</th></tr>
+          </thead>
+          <tbody id="stockTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="manager-right">
+
+      <!-- LOW STOCK -->
+      <div class="card feature-card">
+        <div class="feature-title">📉 Low Stock</div>
+        <div class="feature-actions">
+          <button onclick="demoRefill()">Refill</button>
+        </div>
+        <div class="feature-content">
+          • Notebook A4 – <b style="color:red">8 left</b>
+          <span class="tag tag-low">LOW</span><br>
+          • Pen Pack – <b style="color:orange">12 left</b>
+          <span class="tag tag-warning">WARNING</span>
+        </div>
+        <div id="lowStockMsg" class="result"></div>
+      </div>
+
+      <!-- DEAD STOCK -->
+      <div class="card feature-card">
+        <div class="feature-title">🧊 Dead Stock Intelligence</div>
+
+        <!-- 🔥 ONLY CHANGE IS HERE -->
+        <div class="feature-actions">
+          <button onclick="demoDiscount()">Apply Discount</button>
+          <button onclick="demoBundle()">Bundle</button>
+        </div>
+
+        <div class="feature-content">
+          <span id="deadStockText">Story Book – 30 days inactive</span>
+          <span id="deadStockTag" class="tag tag-alert">ALERT</span><br>
+          <span id="deadStockReason">Reason: Monitoring sales activity</span>
+        </div>
+
+        <div id="deadStockMsg" class="result"></div>
+      </div>
+
+      <!-- RECENT ACTIONS -->
+      <div class="card feature-card">
+        <div class="feature-title">📜 Recent Actions</div>
+        <div class="feature-content" id="recentActions">
+          <div>
+            Notebook A4 refilled by Arun – 10:45 AM
+            <span class="tag tag-action">LOG</span>
+          </div>
+        </div>
+      </div>
+
+     
+<script>
+  const deadStockStages = [
+    { text:"Story Book – 30 days inactive", tag:"ALERT", tagClass:"tag tag-alert", reason:"Reason: Monitoring sales activity", msg:"" },
+    { text:"Story Book – 42 days inactive", tag:"DEAD", tagClass:"tag tag-dead", reason:"Reason: No sales movement detected", msg:"" },
+    { text:"Story Book – 60 days inactive", tag:"CLEARANCE", tagClass:"tag tag-clearance", reason:"Reason: Prolonged inactivity", msg:"" }
+  ];
+
+  let stageIndex = 0;
+  let manualOverride = false;
+
+  function updateDeadStockSimulation() {
+    if (manualOverride) return;
+    const s = deadStockStages[stageIndex];
+    deadStockText.innerText = s.text;
+    deadStockTag.innerText = s.tag;
+    deadStockTag.className = s.tagClass;
+    deadStockReason.innerText = s.reason;
+    deadStockMsg.innerText = s.msg;
+    stageIndex = (stageIndex + 1) % deadStockStages.length;
+  }
+
+  setInterval(updateDeadStockSimulation, 4000);
+
+  function demoDiscount() {
+    manualOverride = true;
+    deadStockMsg.innerText = "💰 Discount applied – clearance started";
+    setTimeout(()=>manualOverride=false,5000);
+  }
+
+  function demoBundle() {
+    manualOverride = true;
+    deadStockMsg.innerText = "🎁 Bundled with fast-moving item";
+    setTimeout(()=>manualOverride=false,5000);
+  }
+
+  function demoRefill() {
+    lowStockMsg.innerText = "✔ Stock refilled (demo)";
+  }
+</script>
+
+    </div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="manager.js"></script>
+</body>
+</html>

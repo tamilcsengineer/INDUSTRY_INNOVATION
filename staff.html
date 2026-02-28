@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Dashboard</title>
+  <link rel="stylesheet" href="global.css">
+
+  <style>
+    .info {
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    select {
+      padding: 6px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+
+<body onload="protectPage(['staff']);">
+
+<div class="sidebar">
+  <h2>Staff</h2>
+  <a href="staff.html" class="active">Sell</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="content" style="margin-left:240px; padding:20px;">
+
+  <h2>🧾 Staff Dashboard</h2>
+
+  <!-- SELL PRODUCT -->
+  <div class="card">
+    <h3>Sell Product</h3>
+    <select id="product">
+      <option>BOOKS</option>
+      <option>TOYS</option>
+      <option>METALS</option>
+    </select>
+    <input type="number" id="qty">
+    <button onclick="sell()">Sell</button>
+    <div id="msg"></div>
+  </div>
+
+  <!-- SALES HISTORY -->
+  <div class="card">
+    <h3>📜 Sales History</h3>
+    <table>
+      <thead>
+        <tr><th>Product</th><th>Qty</th><th>Time</th></tr>
+      </thead>
+      <tbody id="logs"></tbody>
+    </table>
+  </div>
+
+  <!-- LOCATION INTELLIGENCE (MERGED FEATURE) -->
+  <div class="card">
+    <h3>📍 Product Warehouse Location</h3>
+
+    <select onchange="showDetails(this.value)">
+      <option value="">-- Select Product --</option>
+      <option value="toy">Toy</option>
+      <option value="book">Book</option>
+      <option value="electronics">Electronics</option>
+      <option value="furniture">Furniture</option>
+    </select>
+
+    <div id="details" class="info">
+      Product warehouse details will appear here.
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showDetails(product) {
+  const details = document.getElementById("details");
+
+  if (product === "toy") {
+    details.innerHTML =
+      "<b>Product:</b> Toy<br>" +
+      "<b>Warehouse:</b> Block A<br>" +
+      "<b>Location:</b> Chennai Storage Unit";
+  }
+  else if (product === "book") {
+    details.innerHTML =
+      "<b>Product:</b> Book<br>" +
+      "<b>Warehouse:</b> Block B<br>" +
+      "<b>Location:</b> Madurai Storage Unit";
+  }
+  else if (product === "electronics") {
+    details.innerHTML =
+      "<b>Product:</b> Electronics<br>" +
+      "<b>Warehouse:</b> Block C<br>" +
+      "<b>Location:</b> Coimbatore Storage Unit";
+  }
+  else if (product === "furniture") {
+    details.innerHTML =
+      "<b>Product:</b> Furniture<br>" +
+      "<b>Warehouse:</b> Block D<br>" +
+      "<b>Location:</b> Trichy Storage Unit";
+  }
+  else {
+    details.innerHTML = "Product warehouse details will appear here.";
+  }
+}
+</script>
+
+<script src="auth.js"></script>
+<script src="staff.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="global.css">
+</head>
+
+<body onload="protectPage(['admin']);">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Admin</h2>
+    <a href="admindashboard.html" class="active">Dashboard</a>
+    <a href="manager.html">Manager</a>
+    <a href="staff.html">Staff</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" style="margin-left:240px; padding:30px;">
+
+    <!-- HEADER -->
+    <div class="card">
+      <h2 style="text-align:center;">Admin Dashboard</h2>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div style="display:grid; grid-template-columns:2.5fr 1fr; gap:20px; margin-top:20px;">
+
+      <!-- LEFT DASHBOARD METRICS -->
+      <div id="dashboard" class="grid"></div>
+
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex; flex-direction:column; gap:15px;">
+
+        <!-- WORKER -->
+        <div class="card">
+          <h3>👷 Worker Inspection</h3>
+          <table style="width:100%;">
+            <tr><th>Name</th><th>Role</th><th>Status</th></tr>
+            <tbody id="workers"></tbody>
+          </table>
+        </div>
+
+        <!-- SNAPSHOT -->
+        <div class="card">
+          <h3>📦 Inventory Snapshot</h3>
+          <ul id="snapshot"></ul>
+        </div>
+
+        <!-- SYSTEM ALERTS -->
+        <div class="card">
+          <h3>⚠️ System Alerts</h3>
+          <div id="alerts"></div>
+        </div>
+
+        <!-- DEAD STOCK (PERFECTLY ALIGNED) -->
+        <div class="card ai-card">
+          <h3>
+            🧊 Dead Stock Alert 
+            <small style="color:#888">(Live Simulation)</small>
+            <span style="
+              background:#eef;
+              padding:2px 6px;
+              border-radius:6px;
+              font-size:12px;
+              margin-left:6px;
+            ">AI Simulation</span>
+          </h3>
+          <ul id="deadStockList"></ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="auth.js"></script>
+  <script src="adminmetrics.js"></script>
+
+</body>
+</html>
